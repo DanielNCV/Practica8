@@ -1,10 +1,16 @@
 \documentclass{article}
-\usepackage[left=1.9cm, right=1.9cm, top=2cm, bottom=2.5cm]{geometry}
+\usepackage[left=2.8cm, right=2.8cm, top=2.5cm, bottom=2.5cm]{geometry}
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
 
-
+\newcounter{n}
+\addtocounter{n}{5}
+\fancyhead{}
 \title{REINFORCEMENT LEARNING WITH
 PROBABILISTICALLY COMPLETE EXPLORATION}
 \author{\textbf{Philippe Morere*}\\
@@ -19,7 +25,6 @@ University of Sydney, Nvidia
 \date{}
 
 \begin{document}
-
 \maketitle
 \begin{abstract}
     Balancing exploration and exploitation remains a key challenge in reinforcement
@@ -62,6 +67,7 @@ This paper brings the following contributions. We first formulate RL exploration
 problem. This yields a simple and effective method for automatically generating demonstrations
 without the need for an external expert, solving the planning problem by adapting the classic
 \begin{figure}
+\centering
 \begin{subfigure}[b]{0.3\textwidth}
     \centering
     \includegraphics[width=\textwidth]{img-1.png}
@@ -118,20 +124,43 @@ meaning  ${\hat{g}} $ is an unbiased estimator of g with covariance ${\frac{1}{n
 $$
 \theta_{n+1}=\theta_{n}-\epsilon g(\theta_{n})+\frac{\epsilon}{n_{m b}}B\Delta W,\qquad\Delta W\sim\mathcal{N}(0,\bar{1}). 
 $$
-Here we assume that  $C(\theta)=C,$ i.e. approximately constant w.r.t. ${\boldsymbol{\theta}}.$ and factorizes as $C=B B^{T}$ 
-.
+Here we assume that  $C(\theta)=C,$ i.e. approximately constant w.r.t. ${\boldsymbol{\theta}}.$ and factorizes as $C=B B^{T}$.  \\
 SGD is efficient for high-dimensional problems as it offers almost dimension independent convergence
 rates (Nesterov, 2018). However, SGD requires non-zero gradients to guide the search towards the
-optimum $\theta^{*}$ , i.e. $|g(\theta)|>\epsilon_{\alpha},\forall\theta\ne\theta^{*}$  $\epsilon_{\mathcal{I}}\in\mathbb{R}$ In the case of sparse-reward RL problems, such as in Figure l, much of the loss surfaceis flat. This leadsto inefficient exploration of parameter space $\mathbf{\Theta}(0)$ as the drift component in Eq. (1) $g\approx0.$  turning the SGD to a random walk in $\Theta\colon\Delta\theta={\frac{e}{n_{m b}}}B\Delta W$ Random walk is guaranteed to wander to infinity when dimensionality $d\sigma\geq3$ (Polya, 1921; Kakutani, l944). However, the probability of it reaching a desired region in $\mathbf{\Lambda}(\mathbf{\alpha})$  e.g. where $a\neq0$ , depends
-able mpact of learning local policy ${\boldsymbol{\pi}}_{l}$ and biasing search towards $\mathcal{F}_{g o a l}$ with probability $\ p_{g}\,$ on R3L exploration. Results show the mean and standard deviation of successful trajectory length $\left|{\boldsymbol{\tau}}\right|$ and number of timesteps required., computed over 2O runs
+optimum $\theta^{*}$ , i.e. $|g(\theta)|>\epsilon_{\alpha},\forall\theta\ne\theta^{*}$  $\epsilon_{\mathcal{I}}\in\mathbb{R}$ In the case of sparse-reward RL problems, such as in Figure l, much of the loss surfaceis flat. This leadsto inefficient exploration of parameter space $\mathbf{\Theta}(0)$ as the drift component in Eq. (1) $g\approx0.$  turning the SGD to a random walk in $\Theta\colon\Delta\theta={\frac{e}{n_{m b}}}B\Delta W$ Random walk is guaranteed to wander to infinity when dimensionality $d\sigma\geq3$ (Polya, 1921; Kakutani, l944). However, the probability of it reaching a desired region in $\mathbf{\Lambda}(\mathbf{\alpha})$  e.g. where $a\neq0$ , depends \\
+\hline
+\\
 
 
+Table1: impact of learning local policy ${\boldsymbol{\pi}}_{l}$ and biasing search towards $\mathcal{F}_{g o a l}$ with probability $\ p_{g}\,$ on R3L exploration. Results show the mean and standard deviation of successful trajectory length $\left|{\boldsymbol{\tau}}\right|$ and number of timesteps required., computed over 2O runs
+\\
+\resizebox{0.96\textwidth}{!} {
+\begin{tabular}{ c c | c c | c c }
+\scriptsize
+\multicolumn{2}{c|}{} & \multicolumn{2}{c|}{Goal bias ($p_g$ = 0.05)}  & \multicolumn{2}{c}{Unbiased ($p_g$ = 0)} \\
+\multicolumn{2}{c|}{} & Learned ${\boldsymbol{\pi}}_{l}$ & Random ${\boldsymbol{\pi}}_{l}$ & Learned ${\boldsymbol{\pi}}_{l}$ & Random ${\boldsymbol{\pi}}_{l}$ \\ \hline
+ \hline
+\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}MountainCar\end{tabular}} & $\left|{\boldsymbol{\tau}}\right|$ & \textbf{84.75 ± 5.47} & 131.90 ± 17.91   & 86.75 ± 11.82& 139.85 ± 18.79 \\
+                                                                    & timesteps& \textbf{895.65 ± 190.70} & 4303.80 ± 681.60 & 928.90 ± 204.0 & 4447.55 ± 417.10 \\ \hline
+\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}Pendulum\end{tabular}} & $\left|{\boldsymbol{\tau}}\right|$ & \textbf{73.10 ± 12.86} &  75.35 ± 14.50   & 67.05 ± 15.30& 77.90 ± 12.62  \\
+                                                                    & timesteps& \textbf{1108.65 ± 155.29} & 2171.95 ± 381.20 & 1221.35 ± 216.14 & 2349.20 ± 249.26 \\ \hline
+\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}Acrobot\end{tabular}} & $\left|{\boldsymbol{\tau}}\right|$ & 177.55 ± 20.66  & \textbf{163.95 ± 19.19} & 173.5 ± 24.22 &169.05 ± 17.07 \\
+                                                                    & timesteps& 15422.00 ± 2624.16   & \textbf{12675.20 ± 2652.39} & 15792.65 ± 3182.77 & 13133.55 ± 2060.51 \\ \hline
+\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}Cartpole Swingup\end{tabular}} & $\left|{\boldsymbol{\tau}}\right|$ & \textbf{217.35 ± 53.09 } & 319.20 ± 58.78 & 235.70 ± 70.06 &348.35 ± 80.09 \\
+                                                                    & timesteps& \textbf{17502.75 ± 13923.82} & 27186.70 ± 12246.32 & 23456.25 ± 16792.11 &34482.20 ± 12034.27\\ \hline
+\multirow{2}{*}{\begin{tabular}[c]{@{}l@{}}Reacher\end{tabular}}& $\left|{\boldsymbol{\tau}}\right|$ &32.70 ± 13.55  & \textbf{22.05 ± 8.81} &32.25 ± 12.05& 25.30 ± 11.02 \\
+                                                                    & timesteps& 1445.80 ± 1314.48   & \textbf{838.85 ± 846.94} & 1423.00 ± 1030.07 & 1034.55 ± 1208.67 \\ \hline
+
+
+\end{tabular}
+}
+\\
 Accelerating RL by learning from demonstration was investigated in Niekum et al. (2015); Bojarski
 et al. (2016); Torabi et al. (2018). However, these techniques rely on user-generated demonstrations or a-priori knowledge of environment parameters. In contrast, R3L automatically generates
 demonstrations, with no need of an external expert.
 
-\section{EXPERIMENTS}
-In this section, we investigate (i) how learning a local policy πl and biasing search towards Fgoal with
+\section*{\arabic{n} EXPERIMENTS}
+In this section, we investigate (i) how learning a local policy ${\boldsymbol{\pi}}_{l}$ and biasing search towards ${F}_{goal}$ with 
 probability pg affects R3L exploration, (ii) whether separating exploration from policy refinement
 is a viable and robust methodology in RL, (iii) whether R3L reduces the number of exploration
 samples needed to find good policies, compared with methods using classic and intrinsic exploration,
@@ -176,4 +205,108 @@ by increased R3L exploration timesteps. Exploiting external prior knowledge and/
 of the problem can benefit exploration in high-dimensional tasks, and help make R3L practical for
 problems such as Atari games. Lastly, recent advances in RRT (Chiang et al., 2019) and learning
 from demonstration (Torabi et al., 2018) could also improve R3L.
+\section*{References}
+R. Arratia and L. Gordon. Tutorial on large deviations for the binomial distribution. Bulletin of
+Mathematical Biology, 1989. \\
+M. Bellemare, S. Srinivasan, G. Ostrovski, T. Schaul, D. Saxton, and R. Munos. Unifying count-based
+exploration and intrinsic motivation. In Advances in Neural Information Processing Systems, 2016.\\
+M. Bojarski, D. Del Testa, D. Dworakowski, B. Firner, B. Flepp, P. Goyal, L. D. Jackel, M. Monfort,\\
+U. Muller, J. Zhang, X. Zhang, J. Zhao, and K. Ziebaand. End to end learning for self-driving cars.
+NIPS Deep Learning Symposium, 2016.
+L.N. Bottou. Large-scale machine learning with stochastic gradient descent. In International\\
+Conference on Computational Statistics, 2010.\\
+G. Brockman, V. Cheung, L. Pettersson, J. Schneider, J. Schulman, J. Tang, and W. Zaremba. OpenAI
+Gym, 2016.\\
+B. Chen, B. Dai, and L. Song. Learning to plan via neural exploration-exploitation trees.
+arXiv:1903.00070, 2019.\\
+H. Lewis Chiang, J. Hsu, M. Fiser, L. Tapia, and A. Faust. RL-RRT: Kinodynamic motion planning
+via learning reachability estimators from RL policies. Robotics and Automation Letters, 4, 2019.\\
+Y. Duan, X. Chen, R. Houthooft, J. Schulman, and P. Abbeel. Benchmarking deep reinforcement
+learning for continuous control. In International Conference on Machine Learning, 2016.\\
+A. Dvoretzky and P. Erdos. Some problems on random walk in space. In ˝ Proceedings of the Second
+Berkeley Symposium on Mathematical Statistics and Probability, 1951.\\
+A. Ecoffet, J Huizinga, J Lehman, K. O. Stanley, and J. Clune. Go-explore: a new approach for
+hard-exploration problems. arXiv:1901.10995, 2019.\\
+A. Faust, K. Oslund, O. Ramirez, A. Francis, L. Tapia, M. Fiser, and J. Davidson. PRM-RL: Longrange robotic navigation tasks by combining reinforcement learning and sampling-based planning.
+In International Conference on Robotics and Automation, 2018.\\
+C. Florensa, D. Held, M. Wulfmeier, M. Zhang, and P. Abbeel. Reverse curriculum generation for
+reinforcement learning. In Conference on Robot Learning, 2017.\\
+L. Fox, L. Choshen, and Y. Loewenstein. DORA the explorer: Directed outreaching reinforcement
+action-selection. In International Conference on Learning Representations, 2018.\\
+X. Glorot and Y. Bengio. Understanding the difficulty of training deep feedforward neural networks.
+In International Conference on Artificial Intelligence and Statistics, 2010.\\
+R. Houthooft, X. Chen, Y. Duan, J. Schulman, F. De Turck, and P. Abbeel. Vime: Variational
+information maximizing exploration. In Advances in Neural Information Processing Systems,
+2016.\\
+D. Hsu, J.C. Latombe, and R. Motwani. Path planning in expansive configuration spaces. In
+International Conference on Robotics and Automation, 1997. \\
+
+D. Hsu, R. Kindel, J.C. Latombe, and S. Rock. Randomized kinodynamic motion planning with
+moving obstacles. The International Journal of Robotics Research, 2002.\\
+S. Kakutani. On brownian motions in n-space. Proceedings of the Imperial Academy, 1944.\\
+S. Karaman and E. Frazzoli. Sampling-based algorithms for optimal motion planning. The International Journal of Robotics Research, 2011.\\
+L. E. Kavraki, P. Svestka, J. C. Latombe, and M. H. Overmars. Probabilistic roadmaps for path
+planning in high-dimensional configuration spaces. Transactions on Robotics and Automation,
+1996.\\
+M. Kleinbort, K. Solovey, Z. Littlefield, K. E. Bekris, and D. Halperin. Probabilistic completeness of
+RRT for geometric and kinodynamic planning with forward propagation. Robotics and Automation
+Letters, 2019.\\
+J. J. Kuffner and S. M. LaValle. RRT-connect: An efficient approach to single-query path planning.
+In International Conference on Robotics and Automation, 2000.\\
+S. M. Lavalle. Rapidly-exploring random trees: A new tool for path planning. Technical report,
+Department of Computer Science. Iowa State University., 1998.\\
+S. M. LaValle and J. J. Kuffner. Randomized kinodynamic planning. The International Journal of
+Robotics Research, 2001.\\
+T. P. Lillicrap, J. J. Hunt, A. Pritzel, N. Heess, et al. Continuous control with deep reinforcement
+learning. arXiv:1509.02971, 2015.\\
+M. Lopes, T. Lang, M. Toussaint, and P.Y. Oudeyer. Exploration in model-based reinforcement
+learning by empirically estimating learning progress. In Advances in Neural Information Processing
+Systems, 2012.\\
+S. Mandt, M. D. Hoffman, and D. M. Blei. Stochastic gradient descent as approximate bayesian
+inference. The Journal of Machine Learning Research, 18, 2017.\\
+V. Mnih, K. Kavukcuoglu, D. Silver, A. A. Rusu, J. Veness, M. G. Bellemare, A. Graves, M. Riedmiller, A. K. Fidjeland, G. Ostrovski, et al. Human-level control through deep reinforcement
+learning. Nature, 2015.\\
+P. Morere and F. Ramos. Bayesian RL for goal-only rewards. In Conference on Robot Learning,
+2018.\\
+A. Nair, B. McGrew, M. Andrychowicz, W. Zaremba, and P. Abbeel. Overcoming exploration
+in reinforcement learning with demonstrations. In International Conference on Robotics and
+Automation, 2018.\\
+Y. Nesterov. Lectures on Convex Optimization. Springer, 2018.\\
+S. Niekum, S. Osentoski, G. Konidaris, S. Chitta, et al. Learning grounded finite-state representations
+from unstructured demonstrations. The International Journal of Robotics Research, 34, 2015.\\
+I. Osband, C. Blundell, A. Pritzel, and B. Van Roy. Deep exploration via bootstrapped DQN. In
+Advances in Neural Information Processing Systems, 2016a.\\
+I. Osband, B. Van Roy, and Z. Wen. Generalization and exploration via randomized value functions.
+In International Conference on Machine Learning, 2016b.\\
+P. Y. Oudeyer and F. Kaplan. How can we define intrinsic motivation? In International Conference
+on Epigenetic Robotics: Modeling Cognitive Development in Robotic Systems, 2008.\\
+D. Pathak, P. Agrawal, A. A. Efros, and T. Darrell. Curiosity-driven exploration by self-supervised
+prediction. In International Conference on Machine Learning, 2017.\\
+X. B. Peng, M. Andrychowicz, W. Zaremba, and P. Abbeel. Sim-to-real transfer of robotic control
+with dynamics randomization. In International Conference on Robotics and Automation, 2018.
+\\
+M. Plappert, R. Houthooft, P. Dhariwal, S. Sidor, R. Y. Chen, X. Chen, T. Asfour, P. Abbeel, and
+M. Andrychowicz. Parameter space noise for exploration. In International Conference on Learning
+Representations, 2018.\\
+G. Pólya. Über eine aufgabe der wahrscheinlichkeitsrechnung betreffend die irrfahrt im straßennetz.
+Mathematische Annalen, 1921.\\
+A. Rahimi and B. Recht. Random features for large-scale kernel machines. In Advances in Neural
+Information Processing Systems, 2008.\\
+H. Robbins and S. Monro. A stochastic approximation method. The annals of mathematical statistics,
+pp. 400–407, 1951.\\
+J. Schulman, S. Levine, P. Abbeel, M. Jordan, and P. Moritz. Trust region policy optimization. In
+International Conference on Machine Learning, 2015.\\
+B. C. Stadie, S. Levine, and P. Abbeel. Incentivizing exploration in reinforcement learning with deep
+predictive models. arXiv:1507.00814, 2015.\\
+I. Szita and A. Lorincz. The many faces of optimism: a unifying approach. In ˝ International
+Conference on Machine learning, 2008.\\
+F. Torabi, G. Warnell, and P. Stone. Behavioral cloning from observation. In International Joint
+Conference on Artificial Intelligence, 2018.\\
+C. Urmson and R. Simmons. Approaches for heuristically biasing RRT growth. In International
+Conference on Intelligent Robots and Systems, 2003.\\
+N. A. Vien, H. Zimmermann, and M. Toussaint. Bayesian functional optimization. In AAAI
+Conference on Artificial Intelligence, 2018.\\
+A. Wilson, A. Fern, and P. Tadepalli. Using trajectory data to improve bayesian optimization for
+reinforcement learning. The Journal of Machine Learning Research, 2014.
+
 \end{document}
